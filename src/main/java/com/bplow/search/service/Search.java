@@ -14,6 +14,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -75,7 +76,32 @@ public class Search {
         }
         ireader.close();
         directory.close();
-
+        
+    }
+    
+    
+    public void addDocToIndex(Document doc) throws IOException{
+        SmartChineseAnalyzer cnanalyzer = new SmartChineseAnalyzer();
+        Path path = FileSystems.getDefault().getPath("D:/www/index");
+        Directory directory = FSDirectory.open(path);
+        IndexWriterConfig config = new IndexWriterConfig(cnanalyzer);
+        IndexWriter iwriter = new IndexWriter(directory, config);
+        
+        iwriter.addDocument(doc);
+        iwriter.close();
+    }
+    
+    public ScoreDoc[] search(String querystr) throws IOException, ParseException{
+        SmartChineseAnalyzer cnanalyzer = new SmartChineseAnalyzer();
+        Path path = FileSystems.getDefault().getPath("D:/www/index");
+        Directory directory = FSDirectory.open(path);
+        DirectoryReader ireader = DirectoryReader.open(directory);
+        IndexSearcher isearcher = new IndexSearcher(ireader);
+        
+        QueryParser parser = new QueryParser("fieldname", cnanalyzer);
+        Query query = parser.parse("篮球");
+        ScoreDoc[] hits = isearcher.search(query, null, 1000).scoreDocs;
+        return hits;
     }
 
 }
