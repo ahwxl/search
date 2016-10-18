@@ -14,6 +14,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -38,7 +39,10 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.bplow.search.domain.SearchBo;
 
 
 /**
@@ -52,53 +56,64 @@ public class Search implements InitializingBean{
     
     IndexSearcher isearcher = null;
     
+    private IndexWriter iwriter;
+    
+    private DirectoryReader ireader;
+    
     SmartChineseAnalyzer cnanalyzer = new SmartChineseAnalyzer();
     
     private Logger log = LoggerFactory.getLogger(this.getClass());
     
+    @Value("${index.path}")
+    private String indexPath;
+    
     public void afterPropertiesSet() throws Exception {
-        Path path = FileSystems.getDefault().getPath("D:/www/index");
+        Path path = FileSystems.getDefault().getPath(indexPath);
         Directory directory = FSDirectory.open(path);
-        DirectoryReader ireader = DirectoryReader.open(directory);
+        IndexWriterConfig config = new IndexWriterConfig(cnanalyzer);
+        iwriter = new IndexWriter(directory, config);
+        Document doc = new Document();
+        doc.add(new Field("id", "1", TextField.TYPE_STORED));
+        doc.add(new Field("content", "初始化", TextField.TYPE_STORED));
+        iwriter.addDocument(doc);
+        //iwriter.close();
+        ireader = DirectoryReader.open(directory);
         isearcher = new IndexSearcher(ireader);
     }
 
-    public void search() throws Exception {
+    public void search(String keyword) throws Exception {
         //Analyzer analyzer = new StandardAnalyzer();
         // Store the index in memory:
         //Directory directory = new RAMDirectory();
         // To store an index on disk, use this instead:
         //File file = new File("D:/www/index");
-        Path path = FileSystems.getDefault().getPath("D:/www/index");
+        /*Path path = FileSystems.getDefault().getPath(indexPath);
         Directory directory = FSDirectory.open(path);
         IndexWriterConfig config = new IndexWriterConfig(cnanalyzer);
-        IndexWriter iwriter = new IndexWriter(directory, config);
-        Document doc = new Document();
+        IndexWriter iwriter = new IndexWriter(directory, config);*/
+        /*Document doc = new Document();
         String text = "This is the text to be indexed.我爱周星星，喜欢打篮球";
         doc.add(new Field("fieldname", text, TextField.TYPE_STORED));
         doc.add(new Field("fieldname", "打篮球撒范德萨发生大佛山大沙发的飞洒地方多撒啊啊啊啊啊是范德萨范德萨发大厦大佛山大法师打发斯蒂芬", TextField.TYPE_STORED));
         doc.add(new Field("fieldname","abc dfsfsad撒的发反反复复反复反复反复发顺丰的顶顶顶顶顶的说法都是的发生发的啥地方",TextField.TYPE_STORED));
         iwriter.addDocument(doc);
-        iwriter.close();
+        iwriter.close();*/
 
         // Now search the index:
-        DirectoryReader ireader = DirectoryReader.open(directory);
-        IndexSearcher isearcher = new IndexSearcher(ireader);
+        //DirectoryReader ireader = DirectoryReader.open(directory);
+        //IndexSearcher isearcher = new IndexSearcher(ireader);
         // Parse a simple query that searches for "text":
         QueryParser parser = new QueryParser("fieldname", cnanalyzer);
-        Query query = parser.parse("篮球");
+        Query query = parser.parse(keyword);
         ScoreDoc[] hits = isearcher.search(query, null, 1000).scoreDocs;
         //Assert.assertEquals(1, hits.length);
         // Iterate through the results:
         for (int i = 0; i < hits.length; i++) {
             Document hitDoc = isearcher.doc(hits[i].doc);
-            log.info(hitDoc.get("fieldname"));
-            //Assert.assertEquals("This is the text to be indexed.", hitDoc.get("fieldname"));
-            
+            log.info("{},[{}]",hitDoc.get("fieldname"),hitDoc.get("id"));
         }
         ireader.close();
-        directory.close();
-        
+        //directory.close();
     }
     
     /**
@@ -108,14 +123,22 @@ public class Search implements InitializingBean{
      * @throws IOException
      */
     public void addDocToIndex(Document doc) throws IOException{
-        SmartChineseAnalyzer cnanalyzer = new SmartChineseAnalyzer();
-        Path path = FileSystems.getDefault().getPath("D:/www/index");
+        /*SmartChineseAnalyzer cnanalyzer = new SmartChineseAnalyzer();
+        Path path = FileSystems.getDefault().getPath(indexPath);
         Directory directory = FSDirectory.open(path);
         IndexWriterConfig config = new IndexWriterConfig(cnanalyzer);
-        IndexWriter iwriter = new IndexWriter(directory, config);
-        
+        IndexWriter iwriter = new IndexWriter(directory, config);*/
         iwriter.addDocument(doc);
         iwriter.close();
+    }
+    
+    public void addDocToIndex(SearchBo bo) throws IOException{
+    	Document doc = new Document();
+    	doc.add(new Field("id",bo.getId(),TextField.TYPE_STORED));
+    	doc.add(new Field("context",bo.getCnt(),TextField.TYPE_STORED));
+    	doc.add(new Field("fieldname",bo.getName(),TextField.TYPE_STORED));
+    	
+    	addDocToIndex(doc);
     }
     
     /*

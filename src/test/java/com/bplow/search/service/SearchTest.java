@@ -22,6 +22,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
+import com.bplow.search.domain.SearchBo;
+
 
 @ContextConfiguration(locations = { "/applicationContext.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,17 +35,21 @@ public class SearchTest {
     @Autowired
     private Search search;
     
-    @Ignore
     @Test
     public void searchTest() throws Exception{
-        search.search();
-        
+    	SearchBo bo = new SearchBo();
+    	bo.setId("20161018000000012");
+    	bo.setName("打算方法时发生的发生大法师打汪小磊发第三方打算发大水发顺丰");
+    	bo.setCnt("这是内容，你看下汪小");
+    	
+    	search.addDocToIndex(bo);
+    	
+        search.search("小");
     }
     
     /**
      *测试日期 
      */
-    @Ignore
     @Test
     public void addDocTest() throws IOException{
         for(int i =0;i<30;i++){
@@ -73,8 +79,7 @@ public class SearchTest {
         
     }
     
-    //@Ignore
-    //@Test
+    @Test
     public void searchDate() throws IOException, ParseException, InvalidTokenOffsetsException{
         ScoreDoc[] hits = search.search("content", "订单");
         /*for (int i = 0; i < hits.length; i++) {
@@ -90,8 +95,7 @@ public class SearchTest {
      * @throws ParseException
      * @throws InvalidTokenOffsetsException 
      */
-    //@Ignore
-    //@Test
+    @Test
     public void searchRange() throws IOException, ParseException, InvalidTokenOffsetsException{
         ScoreDoc[] hits = search.search("content", "订单");
     }
@@ -102,7 +106,6 @@ public class SearchTest {
      * @throws IOException
      * @throws ParseException
      */
-    //@Ignore
     @Test
     public void searchPage() throws IOException, ParseException{
         search.searchPage("content", "订单");
