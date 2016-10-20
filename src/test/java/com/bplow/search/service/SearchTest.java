@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
+import com.bplow.search.common.DateHelper;
 import com.bplow.search.domain.SearchBo;
 
 
@@ -36,15 +37,21 @@ public class SearchTest {
     private Search search;
     
     @Test
+    public void addDoc4Index()throws Exception{
+        
+        SearchBo bo = new SearchBo();
+        bo.setId(DateHelper.getCurrentDate());
+        bo.setName("GBK的文字编码是双字节来表示的，即不论中、英文字符均使用双字节来表示，只不过为区分中文，将其最高位都定成1。");
+        bo.setCnt("这是内容，你看下汪小");
+        
+        search.addDocToIndex(bo);
+        
+    }
+    
+    
+    @Test
     public void searchTest() throws Exception{
-    	SearchBo bo = new SearchBo();
-    	bo.setId("20161018000000012");
-    	bo.setName("打算方法时发生的发生大法师打汪小磊发第三方打算发大水发顺丰");
-    	bo.setCnt("这是内容，你看下汪小");
-    	
-    	search.addDocToIndex(bo);
-    	
-        search.search("小");
+        search.search("GBK");
     }
     
     /**
