@@ -30,6 +30,8 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortField.Type;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.search.WildcardQuery;
@@ -272,8 +274,11 @@ public class Search implements InitializingBean {
 
 		Page page = this.getPage(isearcher, topDocs, query);
 
-		log.info("最后一条docs,{}", topDocs.scoreDocs[topDocs.scoreDocs.length - 1]);
-		page.setScoreDoc(topDocs.scoreDocs[topDocs.scoreDocs.length - 1]);
+		if(topDocs.scoreDocs.length > 0){
+			log.info("最后一条docs,{}", topDocs.scoreDocs[topDocs.scoreDocs.length - 1]);
+			page.setScoreDoc(topDocs.scoreDocs[topDocs.scoreDocs.length - 1]);
+		}
+		
 		return page;
 	}
 
@@ -318,6 +323,7 @@ public class Search implements InitializingBean {
 			log.info("记录[{},{}]", hitDoc.get("id"), bo.getName());
 			list.add(bo);
 		}
+		page.setData(list);
 
 		return page;
 	}
@@ -354,7 +360,11 @@ public class Search implements InitializingBean {
 		String[] fields = { "content", "name", "category", "price" };
 		Query query = new MultiFieldQueryParser(fields, cnanalyzer)
 				.parse(keyword);
-
+		
+		Sort sort=new Sort(new SortField("date", Type.INT,true));//true为降序排列
+		Sort sort2=new Sort(new SortField[]{new SortField("date", Type.INT, true),new SortField("ename", Type.STRING, false)});
+		
+		
 	}
 
 	/**
