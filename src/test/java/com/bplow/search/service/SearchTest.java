@@ -39,12 +39,12 @@ public class SearchTest {
 	@Test
 	public void addDoc4Index() throws Exception {
 
-		for (int i = 1; i <= 20; i++) {
+		for (int i = 1; i <= 1; i++) {
 
 			SearchBo bo = new SearchBo();
 			bo.setId(DateHelper.getCurrentDate());
-			bo.setName("这是汪小磊搜索标题=>" + i);
-			bo.setCnt("内容被汪小磊搜索内容=>" + i);
+			bo.setName("=>" + i);
+			bo.setCnt("如何理解 01427 错误，在一个很复杂的多表连接update的语句，经常因考虑不周，出现这个错误高文静，仍已上述例子来描述，一个比较简便的方法就是将A表代入 值表达式 中,使用group by 和having 字句查看重复的纪录 =>" + i);
 
 			search.addDocToIndex(bo);
 		}
