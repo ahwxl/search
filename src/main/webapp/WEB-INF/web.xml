@@ -4,6 +4,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:applicationContext.xml
+		classpath:applicationContext-import.xml
 		</param-value>
 	</context-param>
     <!--  development  production -->

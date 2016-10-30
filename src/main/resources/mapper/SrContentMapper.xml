@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bplow.search.mapper.SrContentMapper">
+  
+  <resultMap id="BaseResultMap" type="com.bplow.search.domain.SrContent">
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="cnt_caption" jdbcType="VARCHAR" property="cntCaption" />
+    <result column="second_caption" jdbcType="VARCHAR" property="secondCaption" />
+    <result column="operate_user_id" jdbcType="VARCHAR" property="operateUserId" />
+    <result column="is_delete_flag" jdbcType="CHAR" property="isDeleteFlag" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="click_num" jdbcType="INTEGER" property="clickNum" />
+    <result column="catalog_id" jdbcType="VARCHAR" property="catalogId" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+    <result column="content" jdbcType="LONGVARBINARY" property="content" />
+  </resultMap>
+
+  
+  <sql id="Base_Column_List">
+    id, cnt_caption, second_caption, operate_user_id, is_delete_flag, order_id, click_num, 
+    catalog_id, gmt_create, gmt_modify,content
+  </sql>
+  
+  <select id="queryForPage" parameterType="com.bplow.search.domain.SrContent" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sr_content
+    <where>
+      <trim prefixOverrides="AND">
+        <trim prefix="AND">
+          <if test="id != null">
+             ID = #{id} 
+          </if>
+        </trim>
+      </trim>
+    </where>
+     ORDER BY GMT_MODIFY DESC 
+  </select>
+  
+  
+  
+  <insert id="insert" parameterType="com.bplow.search.domain.SrContent">
+    insert into sr_content (id, cnt_caption, second_caption, 
+      operate_user_id, is_delete_flag, order_id, 
+      click_num, catalog_id, gmt_create, 
+      gmt_modify, content)
+    values (#{id,jdbcType=VARCHAR}, #{cntCaption,jdbcType=VARCHAR}, #{secondCaption,jdbcType=VARCHAR}, 
+      #{operateUserId,jdbcType=VARCHAR}, #{isDeleteFlag,jdbcType=CHAR}, #{orderId,jdbcType=INTEGER}, 
+      #{clickNum,jdbcType=INTEGER}, #{catalogId,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARBINARY})
+  </insert>
+  
+  <update id="update" parameterType="com.bplow.search.domain.SrContent">
+    update sr_content
+    <set>
+      <if test="id != null">
+        id = #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="cntCaption != null">
+        cnt_caption = #{cntCaption,jdbcType=VARCHAR},
+      </if>
+      <if test="secondCaption != null">
+        second_caption = #{secondCaption,jdbcType=VARCHAR},
+      </if>
+      <if test="operateUserId != null">
+        operate_user_id = #{operateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDeleteFlag != null">
+        is_delete_flag = #{isDeleteFlag,jdbcType=CHAR},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="clickNum != null">
+        click_num = #{clickNum,jdbcType=INTEGER},
+      </if>
+      <if test="catalogId != null">
+        catalog_id = #{catalogId,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+     WHERE ID = #{id} 
+  </update>
+
+</mapper>

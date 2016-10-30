@@ -12,7 +12,6 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ public class SearchTest {
 
 	@Autowired
 	private Search search;
-
+	
 	@Test
 	public void addDoc4Index() throws Exception {
 

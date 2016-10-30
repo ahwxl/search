@@ -270,7 +270,7 @@ public class Search implements InitializingBean {
 		ScoreDoc afterDoc = pagetmp.getScoreDoc();
 
 		TopDocs topDocs = isearcher.searchAfter(afterDoc, query,
-				pagetmp.getLimit(), Sort.INDEXORDER);
+				pagetmp.getLimit(), Sort.RELEVANCE);
 
 		Page page = this.getPage(isearcher, topDocs, query);
 
@@ -318,7 +318,7 @@ public class Search implements InitializingBean {
 			Document hitDoc = isearcher.doc(hits[i].doc);
 			bo.setId(hitDoc.get("id"));
 			bo.setName(this.getHightLighterTxt(query, i, hits, "name"));
-			bo.setCnt(hitDoc.get("content"));
+			bo.setCnt(this.getHightLighterTxt(query, i, hits, "content"));
 
 			log.info("记录[{},{}]", hitDoc.get("id"), bo.getName());
 			list.add(bo);
