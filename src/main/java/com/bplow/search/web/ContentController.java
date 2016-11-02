@@ -4,8 +4,12 @@
 package com.bplow.search.web;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +34,7 @@ public class ContentController {
 	
 	
 	@Autowired
-	private ContentService ContentService;
+	private ContentService contentService;
 	
 	@RequestMapping(value = "/addCnt")
 	public String addContentPage(){
@@ -48,9 +52,26 @@ public class ContentController {
 			content.setContent(cnt.getBytes("UTF-8"));
 		}
 		
-		ContentService.addContent(content);
+		contentService.addContent(content);
 		
 		return "ok";
 	}
+	
+	@RequestMapping(value = "/update")
+	@ResponseBody
+	public String updateCnt(HttpServletRequest request) throws Exception{
+	    
+	    InputStream in = request.getInputStream();
+	    String xml = IOUtils.toString(in,"UTF-8");
+	    
+	    logger.info("请求内容url={},content={}",request.getQueryString(),xml);
+	    
+	    contentService.addContent(xml);
+	    
+	    
+	    
+	    return "ok";
+	}
+	
 	
 }

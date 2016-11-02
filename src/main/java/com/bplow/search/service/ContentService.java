@@ -3,10 +3,18 @@
  */
 package com.bplow.search.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +59,40 @@ public class ContentService {
 		log.info("添加内容到索引中:{}",bo.getId());
 		search.addDocToIndex(bo);
 		
+	}
+	
+	public void addContent(String xml) throws Exception{
+	    
+	    SAXReader reader = new SAXReader();
+	    Document document = reader.read(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+	    
+	    Iterator orderIt = document.selectNodes("/add/doc").iterator();
+        while (orderIt.hasNext()) {
+           Element elem = (Element) orderIt.next();
+           SearchBo bo = new SearchBo();
+           
+           Iterator emIt = elem.elementIterator();
+           
+           while(emIt.hasNext()){
+               Element fieldem = (Element) emIt.next();
+               System.out.println(fieldem.attributeValue("name")+"==="+fieldem.getText());
+               
+               
+               if("url".equals(fieldem.attributeValue("name"))){
+                   bo.setUrl(fieldem.getText());
+               }else if("content".equals(fieldem.attributeValue("name"))){
+                   bo.setCnt(fieldem.getText());
+               }else if("digest".equals(fieldem.attributeValue("name"))){
+                   bo.setId(fieldem.getText());
+               }else if("host".equals(fieldem.attributeValue("name"))){
+                   bo.setName(fieldem.getText());
+               }
+           }
+           log.info("添加内容到索引中:{}",bo.getCnt());
+           search.addDocToIndex(bo);
+           
+        }
+	    
 	}
 	
 	public List<SrContent> querySrContent(SrContent content){

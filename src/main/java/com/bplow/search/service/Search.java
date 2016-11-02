@@ -155,6 +155,7 @@ public class Search implements InitializingBean {
 		doc.add(new Field("id", bo.getId(), TextField.TYPE_STORED));
 		doc.add(new Field("content", bo.getCnt(), TextField.TYPE_STORED));
 		doc.add(new Field("name", bo.getName(), TextField.TYPE_STORED));
+		doc.add(new Field("url", bo.getUrl(), TextField.TYPE_STORED));
 
 		addDocToIndex(doc);
 	}
@@ -319,6 +320,7 @@ public class Search implements InitializingBean {
 			bo.setId(hitDoc.get("id"));
 			bo.setName(this.getHightLighterTxt(query, i, hits, "name"));
 			bo.setCnt(this.getHightLighterTxt(query, i, hits, "content"));
+			bo.setUrl(hitDoc.get("url"));
 
 			log.info("记录[{},{}]", hitDoc.get("id"), bo.getName());
 			list.add(bo);
