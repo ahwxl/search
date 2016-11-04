@@ -5,9 +5,11 @@ package com.bplow.search.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -56,21 +58,33 @@ public class ContentController {
 		
 		return "ok";
 	}
-	
+	/**
+	 * nutch使用
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/update")
-	@ResponseBody
-	public String updateCnt(HttpServletRequest request) throws Exception{
+	public void updateCnt(HttpServletRequest request,HttpServletResponse response) throws Exception{
 	    
 	    InputStream in = request.getInputStream();
 	    String xml = IOUtils.toString(in,"UTF-8");
 	    
 	    logger.info("请求内容url={},content={}",request.getQueryString(),xml);
+	    if(StringUtils.isNotEmpty(request.getQueryString())){
+	        contentService.addContent(xml);
+	    }
 	    
-	    contentService.addContent(xml);
-	    
-	    
-	    
-	    return "ok";
+	    OutputStream os = response.getOutputStream();
+        
+        byte VERSION = 2;
+        byte type = (byte) (6 << 5);
+        os.write(VERSION);
+        os.write(type);
+        os.write("<add><doc boost=\"1\"><field name=\"a\"></field><doc></add>".getBytes());
+        os.flush();
+        os.close();
 	}
 	
 	
