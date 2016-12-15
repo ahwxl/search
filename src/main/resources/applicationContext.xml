@@ -10,7 +10,7 @@
     <context:annotation-config /> 
     <tx:annotation-driven />
     <context:property-placeholder location="classpath*:spring/*.properties"/>
-
+    
 	<!-- tomcat jdbc 连接池 -->
 	<bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
 		<!-- Connection Info -->

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +87,35 @@ public class ContentController {
         os.flush();
         os.close();
 	}
+	
+	@RequestMapping(value="select")
+	public void selectCnt(HttpServletRequest request,HttpServletResponse response)throws Exception{
+	    InputStream in = request.getInputStream();
+        String xml = IOUtils.toString(in,"UTF-8");
+        
+        logger.info("请求内容url={},content={}",request.getQueryString(),xml);
+        if(StringUtils.isNotEmpty(request.getQueryString())){
+            //contentService.addContent(xml);
+        }
+        
+        OutputStream os = response.getOutputStream();
+        
+        byte VERSION = 2;
+        byte type = (byte) (6 << 5);
+        os.write(VERSION);
+        os.write(type);
+        os.write("<add><doc boost=\"1\"><field name=\"a\"></field><doc></add>".getBytes());
+        os.flush();
+        os.close();
+	    
+	}
+	
+	@RequiresPermissions("usera:1236")
+	@RequestMapping(value = "/mng/cashe")
+    public String casheMng(){
+        
+        return "content/addContent";
+    }
 	
 	
 }
