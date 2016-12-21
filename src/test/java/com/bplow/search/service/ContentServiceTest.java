@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import com.bplow.search.domain.SrContent;
+import com.bplow.search.domain.TOrder1;
 
 /**
  * @desc 
@@ -49,6 +50,19 @@ public class ContentServiceTest {
 		}
 		
 		log.info("列表大小:{}",list.size());
+	}
+	
+	@Test
+	public void testCreateOrder(){
+	    for(int i=0 ;i<205;i++){
+	        TOrder1 order = new TOrder1();
+	        order.setOrderId(i);
+	        order.setOrderName("手机支付"+i);
+	        
+	        contentService.createOrder(order);
+	    }
+	    
+	    
 	}
 
 }

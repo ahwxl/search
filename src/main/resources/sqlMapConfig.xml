@@ -19,6 +19,7 @@
 
 	<mappers>
 		<mapper resource="mapper/SrContentMapper.xml" />
+		<mapper resource="mapper/TOrder1Mapper.xml" />
 	</mappers>
 
 

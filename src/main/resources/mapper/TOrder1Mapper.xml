@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bplow.search.mapper.TOrder1Mapper">
+  
+  <resultMap id="BaseResultMap" type="com.bplow.search.domain.TOrder1">
+    <id column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="order_name" jdbcType="VARCHAR" property="orderName" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    order_id, order_name
+  </sql>
+  
+  <select id="queryForPage" parameterType="com.bplow.search.domain.TOrder1" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_order
+    <where>
+      <trim prefixOverrides="AND">
+        <trim prefix="AND">
+          <if test="id != null">
+             ID = #{id} 
+          </if>
+        </trim>
+      </trim>
+    </where>
+     ORDER BY GMT_MODIFY DESC 
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_order
+    where order_id = #{orderId,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from t_order
+    where order_id = #{orderId,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="com.bplow.search.domain.TOrder1">
+    insert into t_order (order_id, order_name)
+    values (#{orderId,jdbcType=INTEGER}, #{orderName,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="com.bplow.search.domain.TOrder1">
+    update t_order
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="orderName != null">
+        order_name = #{orderName,jdbcType=VARCHAR},
+      </if>
+    </set>
+     WHERE ID = #{id} 
+  </update>
+</mapper>

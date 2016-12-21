@@ -9,25 +9,61 @@
     <context:component-scan base-package="com.bplow.search"></context:component-scan>
     <context:annotation-config /> 
     <tx:annotation-driven />
-    <context:property-placeholder location="classpath*:spring/*.properties"/>
+    <context:property-placeholder location="classpath*:spring/*.properties" ignore-unresolvable="true" />
     
 	<!-- tomcat jdbc 连接池 -->
-	<bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
-		<!-- Connection Info -->
+	<!-- <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+		Connection Info
 		<property name="driverClassName" value="${jdbc.driver}" />
 		<property name="url" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.username}" />
 		<property name="password" value="${jdbc.password}" />
-		<!-- Connection Pooling Info -->
+		Connection Pooling Info
 		<property name="maxActive" value="${jdbc.pool.maxActive}" />
 		<property name="maxIdle" value="${jdbc.pool.maxIdle}" />
 		<property name="minIdle" value="0" />
 		<property name="defaultAutoCommit" value="false" />
-		<!-- 心跳验证 -->
+		心跳验证
 		<property name="validationQuery" value="SELECT 1"></property>
 		<property name="testOnBorrow" value="true" />
 		<property name="testWhileIdle" value="true" />
+	</bean> -->
+	
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<!-- 数据库基本信息配置 -->
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${password}" />
+		<property name="driverClassName" value="${driverClassName}" />
+		<property name="filters" value="${filters}" />
+		<!-- 最大并发连接数 -->
+		<property name="maxActive" value="${maxActive}" />
+		<!-- 初始化连接数量 -->
+		<property name="initialSize" value="${initialSize}" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="${maxWait}" />
+		<!-- 最小空闲连接数 -->
+		<property name="minIdle" value="${minIdle}" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}" />
+		<property name="validationQuery" value="${validationQuery}" />
+		<property name="testWhileIdle" value="${testWhileIdle}" />
+		<property name="testOnBorrow" value="${testOnBorrow}" />
+		<property name="testOnReturn" value="${testOnReturn}" />
+		<property name="maxOpenPreparedStatements" value="${maxOpenPreparedStatements}" />
+		<!-- 打开 removeAbandoned 功能 -->
+		<property name="removeAbandoned" value="${removeAbandoned}" />
+		<!-- 1800 秒，也就是 30 分钟 -->
+		<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}" />
+		<!-- 关闭 abanded 连接时输出错误日志 -->
+		<property name="logAbandoned" value="${logAbandoned}" />
 	</bean>
+	
+	<bean id="dbtbl_0" parent="dataSource" />
+	
+	<bean id="dbtbl_1" parent="dataSource" />
 
 	<!-- MYBATIS 
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

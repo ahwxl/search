@@ -5,8 +5,10 @@
 	<description>导入search中的applicationContext文件列表</description>
 
     <import resource="spring/cxt-dao.xml" />
+    
+    <import resource="spring/cxt-dao.xml" />
 
-    <import resource="spring/cxt-shiro.xml" />
+    <import resource="spring/shardjdbc-config.xml" />
 
     <!-- <import resource="bpm/applicationContext-bpm.xml" /> -->
     

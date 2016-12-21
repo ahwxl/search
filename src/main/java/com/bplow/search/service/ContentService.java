@@ -23,7 +23,9 @@ import org.springframework.stereotype.Service;
 import com.bplow.search.common.DateHelper;
 import com.bplow.search.domain.SearchBo;
 import com.bplow.search.domain.SrContent;
+import com.bplow.search.domain.TOrder1;
 import com.bplow.search.mapper.SrContentMapper;
+import com.bplow.search.mapper.TOrder1Mapper;
 
 /**
  * @desc 
@@ -37,6 +39,9 @@ public class ContentService {
 	
 	@Autowired
 	private SrContentMapper srContentMapper;
+	
+	@Autowired
+	private TOrder1Mapper orderMapper;
 	
 	@Autowired
 	private Search search;
@@ -100,6 +105,13 @@ public class ContentService {
 		List <SrContent> list = srContentMapper.queryForPage(content);
 		
 		return list;
+	}
+	
+	
+	public void createOrder(TOrder1 order){
+	    
+	    orderMapper.insert(order);
+	    
 	}
 
 }
