@@ -1,32 +1,29 @@
 package com.bplow.search.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.FieldDoc;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
@@ -34,7 +31,6 @@ import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.SortField.Type;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHitCountCollector;
-import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.search.highlight.Fragmenter;
 import org.apache.lucene.search.highlight.Highlighter;
@@ -45,15 +41,14 @@ import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.util.StringUtils;
 import com.bplow.search.domain.SearchBo;
 import com.bplow.search.page.Page;
 
@@ -65,6 +60,8 @@ import com.bplow.search.page.Page;
  */
 @Service
 public class Search implements InitializingBean {
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	IndexSearcher isearcher = null;
 
@@ -78,6 +75,9 @@ public class Search implements InitializingBean {
 
 	@Value("${index.path}")
 	private String indexPath;
+	
+	@Autowired
+	private ValidatorService validatorService;
 
 	public void afterPropertiesSet() throws Exception {
 		Path path = FileSystems.getDefault().getPath(indexPath);
@@ -120,7 +120,7 @@ public class Search implements InitializingBean {
 		// DirectoryReader ireader = DirectoryReader.open(directory);
 		// IndexSearcher isearcher = new IndexSearcher(ireader);
 		// Parse a simple query that searches for "text":
-		QueryParser parser = new QueryParser("name", cnanalyzer);
+		QueryParser parser = new QueryParser("content", cnanalyzer);
 		Query query = parser.parse(keyword);
 		ScoreDoc[] hits = isearcher.search(query, null, 1000).scoreDocs;
 		for (int i = 0; i < hits.length; i++) {
@@ -151,13 +151,49 @@ public class Search implements InitializingBean {
 	}
 
 	public void addDocToIndex(SearchBo bo) throws IOException {
+		
+		if(validatorService.validator(bo)){
+			return ;
+		}
+
 		Document doc = new Document();
-		doc.add(new Field("id", bo.getId(), TextField.TYPE_STORED));
-		doc.add(new Field("content", bo.getCnt(), TextField.TYPE_STORED));
+
+		doc.add(new StringField("id", bo.getId(), Store.YES));
+		doc.add(new StringField("url", bo.getUrl(), Store.YES));
 		doc.add(new Field("name", bo.getName(), TextField.TYPE_STORED));
-		doc.add(new Field("url", bo.getUrl(), TextField.TYPE_STORED));
+		doc.add(new Field("content", bo.getCnt(), TextField.TYPE_STORED));
+		doc.add(new IntField("gmtCreate",new Long(new Date().getTime()).intValue(),
+				IntField.TYPE_STORED));
 
 		addDocToIndex(doc);
+
+	}
+	
+	public void delDocById(String id) throws IOException{
+		
+		if(StringUtils.isEmpty(id)){
+			return ;
+		}
+		
+		if (!iwriter.isOpen()) {
+			Path path = FileSystems.getDefault().getPath(indexPath);
+			Directory directory = FSDirectory.open(path);
+			IndexWriterConfig config = new IndexWriterConfig(cnanalyzer);
+			iwriter = new IndexWriter(directory, config);
+		}
+		
+		iwriter.deleteDocuments(new  Term("id",id));
+		iwriter.close();
+		
+	}
+	
+	//更新文档
+	public void updateDoc(SearchBo bo) throws IOException{
+		
+		delDocById(bo.getId());
+		
+		addDocToIndex(bo);
+		
 	}
 
 	/*
@@ -268,23 +304,27 @@ public class Search implements InitializingBean {
 		Query query = new MultiFieldQueryParser(fields, cnanalyzer)
 				.parse(keyword);
 
-		ScoreDoc afterDoc = pagetmp.getScoreDoc();
+		ScoreDoc afterDoc = new ScoreDoc(0, 0f);
 
-		TopDocs topDocs = isearcher.searchAfter(afterDoc, query,
-				pagetmp.getLimit(), Sort.RELEVANCE);
+		/*
+		 * TopDocs topDocs = isearcher.searchAfter(afterDoc, query,
+		 * pagetmp.getShowSize(), Sort.RELEVANCE);
+		 */
+		TopDocs topDocs = isearcher.search(query, pagetmp.getShowSize(),
+				Sort.RELEVANCE);
 
-		Page page = this.getPage(isearcher, topDocs, query);
+		logger.info("命中记录数:[{}]", topDocs.totalHits);
 
-		if(topDocs.scoreDocs.length > 0){
-			log.info("最后一条docs,{}", topDocs.scoreDocs[topDocs.scoreDocs.length - 1]);
-			page.setScoreDoc(topDocs.scoreDocs[topDocs.scoreDocs.length - 1]);
-		}
-		
+		pagetmp.setTotals(topDocs.totalHits);
+
+		Page page = this.getPage(isearcher, topDocs, query, pagetmp);
+
 		return page;
 	}
 
 	/**
 	 * 获取记录总数
+	 * 
 	 * @param keywords
 	 * @return
 	 * @throws Exception
@@ -295,26 +335,26 @@ public class Search implements InitializingBean {
 		QueryParser parser = new QueryParser("name", cnanalyzer);
 		Query query = parser.parse(keywords);
 		TotalHitCountCollector totalHitCountCollector = new TotalHitCountCollector();
-		/*BooleanQuery q = new BooleanQuery();
-		q.add(new BooleanClause(new WildcardQuery(new Term("", String
-				.valueOf(WildcardQuery.WILDCARD_STRING))),
-				BooleanClause.Occur.MUST));
-		q.add(query, BooleanClause.Occur.MUST);*/
+		/*
+		 * BooleanQuery q = new BooleanQuery(); q.add(new BooleanClause(new
+		 * WildcardQuery(new Term("", String
+		 * .valueOf(WildcardQuery.WILDCARD_STRING))),
+		 * BooleanClause.Occur.MUST)); q.add(query, BooleanClause.Occur.MUST);
+		 */
 		isearcher.search(query, totalHitCountCollector);
 		docCount = totalHitCountCollector.getTotalHits();
-		
+
 		return docCount;
 	}
 
-	public Page getPage(IndexSearcher isearcher, TopDocs paged, Query query)
-			throws IOException, ParseException, InvalidTokenOffsetsException {
+	public Page getPage(IndexSearcher isearcher, TopDocs paged, Query query,
+			Page page) throws IOException, ParseException,
+			InvalidTokenOffsetsException {
 
-		Page page = new Page();
-		page.setLimit(5);
 		ScoreDoc[] hits = paged.scoreDocs;
 
 		List<SearchBo> list = new ArrayList<SearchBo>();
-		for (int i = 0; i < hits.length; i++) {
+		for (int i = page.getPageSize() * Math.max(page.getPageNo() - 1, 0); i < hits.length; i++) {
 			SearchBo bo = new SearchBo();
 			Document hitDoc = isearcher.doc(hits[i].doc);
 			bo.setId(hitDoc.get("id"));
@@ -322,7 +362,8 @@ public class Search implements InitializingBean {
 			bo.setCnt(this.getHightLighterTxt(query, i, hits, "content"));
 			bo.setUrl(hitDoc.get("url"));
 
-			log.info("记录[{},{}]", hitDoc.get("id"), bo.getName());
+			log.info("RECORD:[编号:{},id:{},name:{}]", hits[i].doc,
+					hitDoc.get("content"), hitDoc.get("name"));
 			list.add(bo);
 		}
 		page.setData(list);
@@ -362,11 +403,12 @@ public class Search implements InitializingBean {
 		String[] fields = { "content", "name", "category", "price" };
 		Query query = new MultiFieldQueryParser(fields, cnanalyzer)
 				.parse(keyword);
-		
-		Sort sort=new Sort(new SortField("date", Type.INT,true));//true为降序排列
-		Sort sort2=new Sort(new SortField[]{new SortField("date", Type.INT, true),new SortField("ename", Type.STRING, false)});
-		
-		
+
+		Sort sort = new Sort(new SortField("date", Type.INT, true));// true为降序排列
+		Sort sort2 = new Sort(new SortField[] {
+				new SortField("date", Type.INT, true),
+				new SortField("ename", Type.STRING, false) });
+
 	}
 
 	/**

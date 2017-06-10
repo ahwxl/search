@@ -5,8 +5,6 @@ package com.bplow.search.page;
 
 import java.util.List;
 
-import org.apache.lucene.search.ScoreDoc;
-
 import com.bplow.search.domain.SearchBo;
 
 /**
@@ -16,40 +14,16 @@ import com.bplow.search.domain.SearchBo;
  */
 public class Page {
 	
-	private int limit;
+	private int pageSize = 10;
 	
-	private int pageNum;
+	private int pageNo = 1;
 	
-	private int position;
-
+	private int totals;
+	
+	private int allPages;
+	
 	private List<SearchBo> data;
 	
-	private ScoreDoc scoreDoc;
-
-	public int getLimit() {
-		return limit;
-	}
-
-	public void setLimit(int limit) {
-		this.limit = limit;
-	}
-
-	public int getPageNum() {
-		return pageNum;
-	}
-
-	public void setPageNum(int pageNum) {
-		this.pageNum = pageNum;
-	}
-
-	public int getPosition() {
-		return position;
-	}
-
-	public void setPosition(int position) {
-		this.position = position;
-	}
-
 	public List<SearchBo> getData() {
 		return data;
 	}
@@ -58,12 +32,48 @@ public class Page {
 		this.data = data;
 	}
 
-	public ScoreDoc getScoreDoc() {
-		return scoreDoc;
+	public int getPageSize() {
+		return pageSize;
 	}
 
-	public void setScoreDoc(ScoreDoc scoreDoc) {
-		this.scoreDoc = scoreDoc;
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public int getPageNo() {
+		return pageNo;
+	}
+
+	public void setPageNo(int pageNo) {
+		this.pageNo = pageNo;
+	}
+
+	public int getTotals() {
+		return totals;
+	}
+
+	public void setTotals(int totals) {
+		this.totals = totals;
+		
+		if(totals == 0 || pageSize == 0)
+            this.allPages = 0;
+        else
+        	this.allPages = totals / pageSize + (totals % pageSize <= 0 ? 0 : 1);
+		
+	}
+
+	public int getAllPages() {
+		return allPages;
+	}
+
+	public void setAllPages(int allPages) {
+		this.allPages = allPages;
 	}
 	
+	public int getShowSize(){
+		
+		return this.pageNo * this.pageSize;
+		
+	}
+
 }

@@ -1,13 +1,25 @@
 package com.bplow.search.domain;
 
+import javax.validation.constraints.NotNull;
+
 public class SearchBo {
     
+	@NotNull
     private String id;
+	
     private String name;
+    
     private String summary;
+    
+    @NotNull
     private String cnt;
+    
+    @NotNull
     private String url;
+    
+    @NotNull
     private Long   date;
+    
     private String author;
     
     public SearchBo() {

@@ -25,7 +25,7 @@ import com.bplow.search.common.DateHelper;
 import com.bplow.search.domain.SearchBo;
 import com.bplow.search.page.Page;
 
-@ContextConfiguration(locations = { "/applicationContext.xml" })
+@ContextConfiguration(locations = { "/applicationContext.xml","/applicationContext-import.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = false)
 public class SearchTest {
@@ -41,17 +41,22 @@ public class SearchTest {
 		for (int i = 1; i <= 1; i++) {
 
 			SearchBo bo = new SearchBo();
-			bo.setId(DateHelper.getCurrentDate());
+			/*bo.setId(DateHelper.getCurrentDate());*/
+			bo.setId(""+100);
 			bo.setName("=>" + i);
-			bo.setCnt("如何理解 01427 错误，在一个很复杂的多表连接update的语句，经常因考虑不周，出现这个错误高文静，仍已上述例子来描述，一个比较简便的方法就是将A表代入 值表达式 中,使用group by 和having 字句查看重复的纪录 =>" + i);
-
+			bo.setCnt("如何理解 01427 错误，在一个很复杂的多表连接update的语句，经常因考虑不周，出现这个错误程小飞，仍已上述例子来描述，一个比较简便的方法就是将A表代入 值表达式 中,使用group by 和having 字句查看重复的纪录 =>" + i);
+			bo.setUrl("www.baidu.com");
 			search.addDocToIndex(bo);
+			
+			/*bo.setId("100");
+			bo.setCnt("程小飞程序员");
+			search.updateDoc(bo);*/
 		}
 	}
 
 	@Test
 	public void searchTest() throws Exception {
-		search.search("最高");
+		search.search("程飞");
 	}
 
 	/**
@@ -121,10 +126,11 @@ public class SearchTest {
 	@Test
 	public void searchPage() throws Exception {
 		Page page = new Page();
-		page.setLimit(5);
+		
 		for (int i = 1; i < 5; i++) {
+			page.setPageNo(i);
 			log.info("===============分割线{}======================", i);
-			page = search.searchForPage("汪小磊", page);
+			page = search.searchForPage("程飞", page);
 		}
 
 	}

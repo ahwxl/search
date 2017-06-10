@@ -7,7 +7,7 @@ public class DateHelper {
     
     public static String getCurrentDate(){
         
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         return format.format(new Date());
     }
 

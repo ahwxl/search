@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bplow.search.common.DateHelper;
+import com.bplow.search.common.SecurityUtil;
 import com.bplow.search.domain.SearchBo;
 import com.bplow.search.domain.SrContent;
 import com.bplow.search.domain.TOrder1;
@@ -82,9 +83,9 @@ public class ContentService {
                Element fieldem = (Element) emIt.next();
                System.out.println(fieldem.attributeValue("name")+"==="+fieldem.getText());
                
-               
                if("url".equals(fieldem.attributeValue("name"))){
                    bo.setUrl(fieldem.getText());
+                   bo.setId(SecurityUtil.hash(fieldem.getText()));
                }else if("content".equals(fieldem.attributeValue("name"))){
                    bo.setCnt(fieldem.getText());
                }else if("digest".equals(fieldem.attributeValue("name"))){
@@ -94,7 +95,7 @@ public class ContentService {
                }
            }
            log.info("添加内容到索引中:{}",bo.getCnt());
-           search.addDocToIndex(bo);
+           search.updateDoc(bo);
            
         }
 	    

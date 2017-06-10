@@ -1,1 +1,123 @@
 .highlighter{background-color: yellow;}
+
+.search-forms {
+  margin-bottom:25px;
+  background:#f0f6fa;
+}
+
+/*search default*/
+.search-default form {
+  margin-bottom:0;
+  padding:12px 14px;
+}
+
+.search-default .chat-form {
+  margin:0;
+  padding:0;
+  background:none;
+  overflow:hidden;
+  position:relative;
+}
+
+.search-default .chat-form button {
+  top:0;
+  left:210px;
+  position:absolute;
+}
+
+.search-default .chat-form .input-cont {
+  margin-left:10px;wit
+}
+
+.search-default .chat-form .input-cont input:focus{
+  border: 1px solid #35aa47 !important;
+}
+
+.search-result {
+  background:#fafafa;
+}
+
+/*search classic*/
+.search-classic {
+  margin-bottom:30px;
+}
+
+.search-classic h4 {
+  margin-bottom:3px;
+}
+
+.overflow-hidden {
+  overflow:hidden;
+}
+
+.chat-form {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #e9eff3;
+  overflow: hidden;
+  clear: both;   
+}
+
+.chat-form .input-cont {
+  margin-right: 55px;
+}
+
+.chat-form .input-cont .m-wrap {
+  margin-bottom: 0px;
+}
+
+.chat-form .input-cont input{
+  border: 1px solid #ddd;
+  width: 200px;  
+  margin-top: 0;
+}
+
+.chat-form .input-cont input {
+  background-color: #fff !important;
+}
+
+.chat-form .input-cont input:focus{
+  border: 1px solid #4b8df9 !important;
+}
+
+.chat-form .btn-cont {
+  margin-top: -42px;
+  position: relative;
+  float: right;
+  width:44px;
+}
+
+.chat-form .btn-cont .arrow {
+  position: absolute;
+  top: 17px;
+  right: 43px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;  
+  border-right: 8px solid #4d90fe;   
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box; 
+}
+
+.chat-form .btn-cont:hover .arrow {
+  border-right-color: #0362fd;
+}
+
+.chat-form .btn-cont:hover .btn {
+  background-color: #0362fd;
+}
+
+.chat-form .btn-cont .btn {
+  margin-top: 8px;
+}
+
+.txt{
+    border:0px solid #ddd;
+    overflow: hidden;
+    white-space: normal;
+    text-overflow: ellipsis;
+}
+
+.m-icon-white {
+  background-image: url(../image/syncfusion-icons-white.png);
+}
