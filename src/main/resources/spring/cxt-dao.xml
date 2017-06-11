@@ -14,7 +14,7 @@
 
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="configLocation" value="classpath:sqlMapConfig.xml" />
-		<property name="dataSource" ref="shardingDataSource" />
+		<property name="dataSource" ref="dataSource" />
 		<property name="typeAliasesPackage" value="com.bplow.search.domain" />
 	</bean>
 

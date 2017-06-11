@@ -29,13 +29,13 @@ public class ValidatorService implements InitializingBean {
 	
 	public boolean validator(Object object){
 		
-		boolean result = true;
+		boolean result = false;
 		
 		Set<ConstraintViolation<Object>> constraintViolations = validator.validate(object);
 		
 		if(constraintViolations.size() > 0){
 			
-			result = false;
+			result = true;
 			
 			logger.error("{}",constraintViolations.iterator().next().getMessage());
 		}

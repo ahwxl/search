@@ -317,6 +317,11 @@
             <version>${sharding-jdbc-core.version}</version>  
         </dependency>
         <dependency>
+		    <groupId>com.dangdang</groupId>
+		    <artifactId>sharding-jdbc-self-id-generator</artifactId>
+		    <version>${sharding-jdbc-core.version}</version>
+		</dependency>
+        <dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator-cdi</artifactId>             
 		    <version>5.1.3.Final</version>
