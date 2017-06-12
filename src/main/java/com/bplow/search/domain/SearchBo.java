@@ -17,7 +17,6 @@ public class SearchBo {
     @NotNull
     private String url;
     
-    @NotNull
     private Long   date;
     
     private String author;
